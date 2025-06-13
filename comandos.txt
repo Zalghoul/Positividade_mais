@@ -1,0 +1,3 @@
+artillery run 
+npx cypress open
+npx jest

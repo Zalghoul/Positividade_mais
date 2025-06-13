@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positividade+</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Positividade+</h1>
+    <div class="header-links">
+        <a href="login.html" class="btn login-btn">Login</a>
+    </div>
+</header>
+<div class="container">
+    <h1>Positividade+</h1>
+    <p>Nosso site foi projetado para ser um refúgio de mensagens e interações positivas, proporcionando um ambiente onde a inspiração e o otimismo florescem. Ao visitar o Positividade+, você encontrará mensagens aleatórias de positividade que trazem um toque de alegria e motivação instantânea ao seu dia.</p>
+    <p>Para desfrutar de uma experiência ainda mais enriquecedora, convidamos você a fazer login. Como usuário cadastrado, você poderá:</p>
+    <ul>
+        <li>Enviar mensagens personalizadas de positividade para outros membros da nossa comunidade.</li>
+        <li>Expressar seu apreço por mensagens inspiradoras, dando "like" nelas e reconhecendo o conteúdo que mais ressoa com você.</li>
+    </ul>
+    <p>Nossa plataforma valoriza a positividade e o reconhecimento mútuo, criando um ciclo de interações construtivas e motivadoras. Além disso, contamos com um Administrador dedicado para moderar o conteúdo, gerenciar contas de usuário e garantir o funcionamento harmonioso do site.</p>
+    <a href="mensagemsite.html" class="button">Ver Mensagem</a>
+    <div class="message-container">
+        <h3>Mensagem com mais likes do mês:</h3>
+        <p id="topMessage"></p>
+        <p id="topMessageLikes"></p> 
+    </div>
+</div>
+
+<script>
+fetch('/top-message')
+    .then(response => response.json())
+    .then(data => {
+        if (data && data.message) {
+            document.getElementById('topMessage').textContent = data.message.texto;
+            document.getElementById('topMessageLikes').textContent = `Likes: ${data.message.likes}`;
+        } else {
+            document.getElementById('topMessage').textContent = 'Nenhuma mensagem encontrada para este mês.';
+            document.getElementById('topMessageLikes').textContent = 'Likes: 0';
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao carregar a mensagem:', error);
+    });
+</script>
+</body>
+</html>

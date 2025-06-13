@@ -1,0 +1,28 @@
+{
+  "name": "positividade_maisnode",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "cypress": "^14.4.1",
+    "jest": "^29.7.0",
+    "supertest": "^7.1.1"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "description": ""
+}

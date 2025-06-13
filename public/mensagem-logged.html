@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens (Logado) - Positividade+</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Positividade+</h1>
+    <div class="header-links">
+        <a href="index-logged.html" class="btn login-btn">Início</a>
+        <a href="#" id="logoutButton" class="btn login-btn">Logout</a>
+    </div>
+</header>
+<div class="container">
+    <h1>Mensagem:</h1>
+    <div class="message-container">
+        <p id="messageText"></p>
+        <p id="messageLikes"></p> 
+        <form id="likeForm">
+            <input type="hidden" name="id" id="messageId">
+            <button type="submit" class="like-button">Curtir</button>
+        </form>
+        <button id="nextMessageButton" class="button">Próxima Mensagem</button>
+    </div>
+</div>
+
+<script>
+    // Verificar se o usuário está logado
+    if (!localStorage.getItem('user_id')) {
+        window.location.href = 'login.html';
+    }
+
+    document.getElementById('likeForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const messageId = document.getElementById('messageId').value;
+        fetch('/increment-likes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: messageId })
+        }).then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Like adicionado!');
+                updateMessage();
+            } else {
+                alert('Erro ao adicionar like.');
+            }
+        }).catch(error => {
+            alert('Erro ao adicionar like.');
+        });
+    });
+
+    document.getElementById('nextMessageButton').addEventListener('click', function(event) {
+        updateMessage();
+    });
+
+    function updateMessage() {
+        fetch('/random-message')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Received data:', data); 
+                if (data && data.message) {
+                    document.getElementById('messageText').textContent = data.message.texto;
+                    document.getElementById('messageLikes').textContent = `Likes: ${data.message.likes}`;
+                    document.getElementById('messageId').value = data.message.id;
+                } else {
+                    alert('Erro ao carregar a próxima mensagem.');
+                }
+            })
+            .catch(error => {
+                alert('Erro ao carregar a próxima mensagem.');
+            });
+    }
+
+    
+    updateMessage();
+
+    // Função de logout
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('username');
+        window.location.href = 'index.html';
+    });
+
+    // Redirecionar para login se o usuário tentar voltar para uma página protegida após logout
+    window.history.pushState(null, null, window.location.href);
+    window.addEventListener('popstate', function(event) {
+        if (!localStorage.getItem('user_id')) {
+            window.location.href = 'login.html';
+        }
+    });
+</script>
+</body>
+</html>

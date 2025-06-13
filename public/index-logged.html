@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script src="function.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positividade+ (Logado)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Positividade+</h1>
+    <div class="header-links">
+        <a href="mensagem-logged.html" class="btn login-btn">Ver Mensagem</a>
+        <a href="#" id="logoutButton" class="btn login-btn">Logout</a>
+        <a href="usuario.html" class="btn login-btn">Usuário</a>
+    </div>
+</header>
+<div class="container">
+    <h1>Positividade+</h1>
+    <p>Nosso site foi projetado para ser um refúgio de mensagens e interações positivas, proporcionando um ambiente onde a inspiração e o otimismo florescem. Ao visitar o Positividade+, você encontrará mensagens aleatórias de positividade que trazem um toque de alegria e motivação instantânea ao seu dia.</p>
+    <div class="message-container">
+        <h3>Escreva uma nova mensagem positiva:</h3>
+        <form id="mensagemForm">
+            <textarea class="text-field" name="texto" placeholder="Digite sua mensagem positiva aqui..."></textarea>
+            <button type="submit" class="button">Enviar</button>
+        </form>
+    </div>
+    <div class="message-container">
+        <h3>Mensagem com mais likes do mês:</h3>
+        <p id="topMessage"></p>
+        <p id="topMessageLikes"></p> <!-- Adicionado para exibir likes -->
+    </div>
+</div>
+
+<div id="popup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <p id="popupMessage"></p>
+</div>
+
+<script>
+    // Verificar se o usuário está logado
+    if (!localStorage.getItem('user_id')) {
+        window.location.href = 'login.html';
+    }
+
+    document.getElementById('mensagemForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const texto = formData.get('texto');
+        const user_id = localStorage.getItem('user_id'); // Obtém o user_id do armazenamento local
+
+        fetch('/mensagem', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                texto: texto,
+                user_id: user_id
+            })
+        }).then(response => response.json())
+        .then(data => {
+            showPopup(data.message);
+            if (data.success) {
+                document.getElementById('mensagemForm').reset();
+            }
+        }).catch(error => {
+            showPopup('Erro ao enviar a mensagem.');
+        });
+    });
+
+    function showPopup(message) {
+        document.getElementById('popupMessage').textContent = message;
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
+
+    fetch('/top-message')
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.message) {
+                document.getElementById('topMessage').textContent = data.message.texto;
+                document.getElementById('topMessageLikes').textContent = `Likes: ${data.message.likes}`;
+            } else {
+                document.getElementById('topMessage').textContent = 'Nenhuma mensagem encontrada para este mês.';
+                document.getElementById('topMessageLikes').textContent = 'Likes: 0';
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar a mensagem:', error);
+        });
+
+    // Função de logout
+    document.getElementById('logoutButton').addEventListener('click', function() {
+        localStorage.removeItem('user_id');
+        localStorage.removeItem('username');
+        window.location.href = 'index.html';
+    });
+
+    // Redirecionar para login se o usuário tentar voltar para uma página protegida após logout
+    window.history.pushState(null, null, window.location.href);
+    window.addEventListener('popstate', function(event) {
+        if (!localStorage.getItem('user_id')) {
+            window.location.href = 'login.html';
+        }
+    });
+</script>
+
+<style>
+    .popup {
+        display: none;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 5px;
+        z-index: 1000;
+    }
+
+    .popup .close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+    }
+</style>
+</body>
+</html>

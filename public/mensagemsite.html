@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensagens - Positividade+</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Positividade+</h1>
+    <div class="header-links">
+        <a href="index.html" class="btn login-btn">Início</a>
+        <a href="login.html" class="btn login-btn">Login</a>
+    </div>
+</header>
+<div class="container">
+    <h1>Mensagem:</h1>
+    <div class="message-container">
+        <p id="messageText"></p>
+        <p id="messageLikes"></p>
+    </div>
+</div>
+<script>
+fetch('/random-message')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Received data:', data); 
+        if (data && data.message) {
+            document.getElementById('messageText').textContent = data.message.texto;
+            document.getElementById('messageLikes').textContent = `Likes: ${data.message.likes}`;
+        } else {
+            document.getElementById('messageText').textContent = 'Nenhuma mensagem encontrada.';
+            document.getElementById('messageLikes').textContent = 'Likes: 0';
+        }
+    })
+    .catch(error => {
+        console.error('Erro ao carregar a mensagem:', error);
+    });
+</script>
+</body>
+</html>

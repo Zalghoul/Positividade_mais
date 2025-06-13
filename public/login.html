@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <script src="function.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Positividade+ - Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="login-register">
+  <header>
+    <h1>Positividade+</h1>
+    <div class="header-links">
+      <a href="index.html" class="btn login-btn">Início</a>
+    </div>
+  </header>
+
+  <div class="container login-register">
+    <div class="form-box">
+      <h1 class="login-register">Login</h1>
+      <form id="loginForm">
+        <div class="input-group">
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email">
+        </div>
+        <div class="input-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password">
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <p class="message">Não tem uma conta? <a href="registro.html">Registre-se</a></p>
+      </form>
+    </div>
+  </div>
+
+  <div id="popup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <p id="popupMessage"></p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !password) {
+        showPopup('Email e senha são obrigatórios');
+        return;
+      }
+
+      const formData = new FormData(this);
+      fetch('/login', {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        showPopup(data.message);
+        if (data.success) {
+          localStorage.setItem('user_id', data.user.id);
+          localStorage.setItem('username', data.user.nome);
+          setTimeout(() => {
+            window.location.href = 'index-logged.html';
+          }, 2000);
+        }
+      })
+      .catch(error => {
+        showPopup('Erro ao fazer login.');
+      });
+    });
+
+    function showPopup(message) {
+      const popup = document.getElementById('popup');
+      const popupMessage = document.getElementById('popupMessage');
+      popupMessage.textContent = message;
+      popup.style.display = 'block';
+    }
+
+    function closePopup() {
+      document.getElementById('popup').style.display = 'none';
+    }
+  </script>
+
+  <style>
+    .popup {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 5px;
+      z-index: 1000;
+    }
+
+    .popup .close {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+    }
+  </style>
+</body>
+</html>

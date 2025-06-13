@@ -1,0 +1,20 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 30
+      arrivalRate: 20
+scenarios:
+  - name: Teste simples GET nas páginas principais
+    flow:
+      - get:
+          url: "/index.html"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/login.html"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/registro.html"
+          expect:
+            - statusCode: 200
